@@ -1,5 +1,9 @@
 <template>
   <div>
+    <section v-show="gameStopped">
+      <h2>Game result</h2>
+      <p class="winLoseMsg">{{winLoseMessage}}</p>
+    </section>
     <section id="monster" class="container">
       <h2>Monster Health</h2>
       <div class="healthbar">
@@ -13,11 +17,11 @@
       </div>
     </section>
     <section id="controls">
-      <button v-on:click="attackMonster">ATTACK</button>
-      <button v-bind:disabled="round % 3 !== 0" v-on:click="specialAttack">
+      <button v-on:click="attackMonster" v-bind:disabled="gameStopped">ATTACK</button>
+      <button v-bind:disabled="round % 3 !== 0 || gameStopped" v-on:click="specialAttack">
         SPECIAL ATTACK
       </button>
-      <button v-on:click="healPlayer">HEAL</button>
+      <button v-on:click="healPlayer" v-bind:disabled="gameStopped">HEAL</button>
       <button>SURRENDER</button>
       <button v-on:click="restartGame">RESTART GAME</button>
     </section>
@@ -40,6 +44,8 @@ export default {
       playerHealth: 100,
       monsterHealth: 100,
       round: 0,
+      winLoseMessage: "",
+      gameStopped: false,
     };
   },
   computed: {
@@ -50,13 +56,33 @@ export default {
       return { width: this.playerHealth + "%" };
     },
   },
+  // watch: {
+  //   playerHealth(value) {
+  //     if (value <= 0){
+  //       this.winLoseMessage = "The Monster beat you, you lost";
+  //     } else if (value <= 0 && this.monsterHealth <= 0) {
+  //       this.winLoseMessage = "It's a DRAW!"
+  //     } else {
+  //       this.winLoseMessage = "";
+  //     }
+  //   },
+  //   monsterHealth(value) {
+  //     if (value <= 0){
+  //       this.winLoseMessage = "You won! You beat the monster!";
+  //     } else if (value <= 0 && this.playerHealth <= 0) {
+  //       this.winLoseMessage = "It's a DRAW!"
+  //     } else {
+  //       this.winLoseMessage = "";
+  //     }
+  //   }
+  // },
   methods: {
     attackMonster() {
       this.round++;
       const attackValue = getRandomValue(5, 12);
       if (this.monsterHealth - attackValue <= 0) {
-        alert("You won! You beat the monster! The game will be restarted");
-        this.restartGame();
+        this.winLoseMessage = "You won! You beat the monster!";
+        this.gameStopped = true;
       } else {
         this.monsterHealth -= attackValue;
         this.attackPlayer();
@@ -65,8 +91,8 @@ export default {
     attackPlayer() {
       const attackValue = getRandomValue(8, 15);
       if (this.playerHealth - attackValue <= 0) {
-        alert("The Monster beat you, you lost. The game will be restarted");
-        this.restartGame();
+        this.winLoseMessage = "The Monster beat you, you lost.";
+        this.gameStopped = true;
       } else {
         this.playerHealth -= attackValue;
       }
@@ -74,8 +100,13 @@ export default {
     specialAttack() {
       this.round++;
       const attackValue = getRandomValue(10, 22);
-      this.monsterHealth -= attackValue;
-      this.attackPlayer();
+      if (this.monsterHealth - attackValue <= 0) {
+        this.winLoseMessage = "You won! You beat the monster!";
+        this.gameStopped = true;
+      } else {
+        this.monsterHealth -= attackValue;
+        this.attackPlayer();
+      }
     },
     healPlayer() {
       this.round++;
@@ -91,6 +122,8 @@ export default {
       this.playerHealth = 100;
       this.monsterHealth = 100;
       this.round = 0;
+      this.gameStopped = false;
+      this.winLoseMessage = "";
     },
   },
 };
@@ -122,6 +155,15 @@ section {
   width: 90%;
   max-width: 40rem;
   margin: auto;
+}
+
+.winLoseMsg {
+  border: 3px solid rgb(7, 138, 245);
+  border-radius: 30%;
+  width: max-content;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .healthbar {
