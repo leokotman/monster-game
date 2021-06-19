@@ -14,9 +14,12 @@
     </section>
     <section id="controls">
       <button v-on:click="attackMonster">ATTACK</button>
-      <button>SPECIAL ATTACK</button>
-      <button>HEAL</button>
+      <button v-bind:disabled="round % 3 !== 0" v-on:click="specialAttack">
+        SPECIAL ATTACK
+      </button>
+      <button v-on:click="healPlayer">HEAL</button>
       <button>SURRENDER</button>
+      <button v-on:click="restartGame">RESTART GAME</button>
     </section>
     <section id="log" class="container">
       <h2>Battle Log</h2>
@@ -26,37 +29,59 @@
 </template>
 
 <script>
-
-function getRandomValue(min, max){
-    return Math.floor(Math.random() * (max - min) + min);
+function getRandomValue(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
 export default {
   name: "Game",
   data() {
-      return {
-          playerHealth: 100,
-          monsterHealth: 100,
-      }
+    return {
+      playerHealth: 100,
+      monsterHealth: 100,
+      round: 0,
+    };
   },
-  computed:{
+  computed: {
     monsterBar() {
-      return {width: this.monsterHealth + '%'};
+      return { width: this.monsterHealth + "%" };
     },
     playerBar() {
-      return {width: this.playerHealth + '%'};
-    }
+      return { width: this.playerHealth + "%" };
+    },
   },
   methods: {
-      attackMonster() {
-          const attackValue = getRandomValue(5, 12);
-          this.monsterHealth -= attackValue;
-          this.attackPlayer();
-      },
-      attackPlayer() {
-          const attackValue = getRandomValue(8, 15);
-          this.playerHealth -= attackValue;
+    attackMonster() {
+      this.round++;
+      const attackValue = getRandomValue(5, 12);
+      this.monsterHealth -= attackValue;
+      this.attackPlayer();
+    },
+    attackPlayer() {
+      const attackValue = getRandomValue(8, 15);
+      this.playerHealth -= attackValue;
+    },
+    specialAttack() {
+      this.round++;
+      const attackValue = getRandomValue(10, 22);
+      this.monsterHealth -= attackValue;
+      this.attackPlayer();
+    },
+    healPlayer() {
+      this.round++;
+      const healValue = getRandomValue(8, 12);
+      if (this.playerHealth + healValue > 100) {
+        this.playerHealth = 100;
+      } else {
+        this.playerHealth += healValue;
       }
+      this.attackPlayer();
+    },
+    restartGame() {
+      this.playerHealth = 100;
+      this.monsterHealth = 100;
+      this.round = 0;
+    }
   },
 };
 </script>
