@@ -28,7 +28,7 @@
   </div>
 </template>
 
-<script></script>
+<script>
 function getRandomValue(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
