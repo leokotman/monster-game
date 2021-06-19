@@ -28,7 +28,7 @@
   </div>
 </template>
 
-<script>
+<script></script>
 function getRandomValue(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
@@ -54,12 +54,22 @@ export default {
     attackMonster() {
       this.round++;
       const attackValue = getRandomValue(5, 12);
-      this.monsterHealth -= attackValue;
-      this.attackPlayer();
+      if (this.monsterHealth - attackValue <= 0) {
+        alert("You won! You beat the monster! The game will be restarted");
+        this.restartGame();
+      } else {
+        this.monsterHealth -= attackValue;
+        this.attackPlayer();
+      }
     },
     attackPlayer() {
       const attackValue = getRandomValue(8, 15);
-      this.playerHealth -= attackValue;
+      if (this.playerHealth - attackValue <= 0) {
+        alert("The Monster beat you, you lost. The game will be restarted");
+        this.restartGame();
+      } else {
+        this.playerHealth -= attackValue;
+      }
     },
     specialAttack() {
       this.round++;
@@ -81,7 +91,7 @@ export default {
       this.playerHealth = 100;
       this.monsterHealth = 100;
       this.round = 0;
-    }
+    },
   },
 };
 </script>
