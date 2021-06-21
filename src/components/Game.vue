@@ -2,33 +2,56 @@
   <div>
     <section v-show="gameStopped">
       <h2>Game result</h2>
-      <p class="winLoseMsg">{{winLoseMessage}}</p>
+      <p class="winLoseMsg">{{ winLoseMessage }}</p>
     </section>
     <section id="monster" class="container">
       <h2>Monster Health</h2>
+      <h3>{{ monsterHealth }}</h3>
       <div class="healthbar">
         <div class="healthbar__value" v-bind:style="monsterBar"></div>
       </div>
     </section>
     <section id="player" class="container">
       <h2>Your Health</h2>
+      <h3>{{ playerHealth }}</h3>
       <div class="healthbar">
         <div class="healthbar__value" v-bind:style="playerBar"></div>
       </div>
     </section>
     <section id="controls">
-      <button v-on:click="attackMonster" v-bind:disabled="gameStopped">ATTACK</button>
-      <button v-bind:disabled="round % 3 !== 0 || gameStopped" v-on:click="specialAttack">
+      <button v-on:click="attackMonster" v-bind:disabled="gameStopped">
+        ATTACK
+      </button>
+      <button
+        v-bind:disabled="round % 3 !== 0 || gameStopped"
+        v-on:click="specialAttack"
+      >
         SPECIAL ATTACK
       </button>
-      <button v-on:click="healPlayer" v-bind:disabled="gameStopped">HEAL</button>
+      <button v-on:click="healPlayer" v-bind:disabled="gameStopped">
+        HEAL
+      </button>
       <button v-on:click="restartGame">RESTART GAME</button>
     </section>
     <section id="log" class="container">
       <h2>Battle Log</h2>
       <ul>
         <li v-for="logMessage in logMessagesList" v-bind:key="logMessage">
-          {{logMessage.whoActed}} – {{logMessage.whichAction}}: {{logMessage.valueOfAction}}
+          <span
+            v-bind:class="{
+              'log--player': logMessage.whoActed === 'player',
+              'log--monster': logMessage.whoActed === 'monster',
+            }"
+            >{{ logMessage.whoActed }}</span
+          >
+          – {{ logMessage.whichAction }}:
+          <span
+            v-bind:class="{
+              'log--damage': logMessage.whichAction === 'attack',
+              'log--heal': logMessage.whichAction === 'heal',
+            }"
+            >{{ logMessage.valueOfAction }}</span
+          >
         </li>
       </ul>
     </section>
@@ -65,38 +88,41 @@ export default {
       this.round++;
       const attackValue = getRandomValue(5, 12);
       if (this.monsterHealth - attackValue <= 0) {
-        this.monsterHealth -= attackValue;
+        this.monsterHealth = 0;
+        this.addActionMessage("player", "attack", attackValue);
         this.winLoseMessage = "You won! You beat the monster!";
         this.gameStopped = true;
       } else {
         this.monsterHealth -= attackValue;
+        this.addActionMessage("player", "attack", attackValue);
         this.attackPlayer();
       }
-      this.addActionMessage("player", "attack", attackValue);
     },
     attackPlayer() {
       const attackValue = getRandomValue(8, 15);
       if (this.playerHealth - attackValue <= 0) {
-        this.playerHealth -= attackValue;
+        this.playerHealth = 0;
+        this.addActionMessage("monster", "attack", attackValue);
         this.winLoseMessage = "The Monster beat you, you lost.";
         this.gameStopped = true;
       } else {
         this.playerHealth -= attackValue;
+        this.addActionMessage("monster", "attack", attackValue);
       }
-      this.addActionMessage("monster", "attack", attackValue);
     },
     specialAttack() {
       this.round++;
       const attackValue = getRandomValue(10, 22);
       if (this.monsterHealth - attackValue <= 0) {
-        this.monsterHealth -= attackValue;
+        this.monsterHealth = 0;
+        this.addActionMessage("player", "attack", attackValue);
         this.winLoseMessage = "You won! You beat the monster!";
         this.gameStopped = true;
       } else {
         this.monsterHealth -= attackValue;
+        this.addActionMessage("player", "attack", attackValue);
         this.attackPlayer();
       }
-      this.addActionMessage("player", "attack", attackValue);
     },
     healPlayer() {
       this.round++;
@@ -121,7 +147,7 @@ export default {
       this.logMessagesList.unshift({
         whoActed: who,
         whichAction: what,
-        valueOfAction: value
+        valueOfAction: value,
       });
     },
   },
@@ -244,10 +270,12 @@ button:disabled {
 
 .log--player {
   color: #7700ff;
+  text-transform: capitalize;
 }
 
 .log--monster {
   color: #da8d00;
+  text-transform: capitalize;
 }
 
 .log--damage {
