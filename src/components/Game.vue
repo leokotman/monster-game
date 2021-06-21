@@ -1,5 +1,8 @@
 <template>
   <div>
+    <header>
+      <h1>Beat the MONSTER!</h1>
+    </header>
     <section v-show="gameStopped">
       <h2>Game result</h2>
       <p class="winLoseMsg">{{ winLoseMessage }}</p>
@@ -170,7 +173,7 @@ body {
 header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   padding: 0.5rem;
-  background-color: #880017;
+  background-color: #4b23db71;
   color: white;
   text-align: center;
   margin-bottom: 2rem;
@@ -183,8 +186,8 @@ section {
 }
 
 .winLoseMsg {
-  border: 3px solid rgb(7, 138, 245);
-  border-radius: 30%;
+  border: 3px solid #4b23db71;
+  border-radius: 10px;
   width: max-content;
   padding: 1rem;
   box-sizing: border-box;
@@ -228,13 +231,14 @@ section {
 
 button {
   font: inherit;
-  border: 1px solid #88005b;
-  background-color: #88005b;
+  font-weight: bold;
+  border: 1px solid #7700ff;
+  background-color: #5b03befb;
   color: white;
   padding: 1rem 2rem;
   border-radius: 12px;
   margin: 1rem;
-  width: 12rem;
+  width: 15rem;
   cursor: pointer;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
 }
@@ -245,8 +249,8 @@ button:focus {
 
 button:hover,
 button:active {
-  background-color: #af0a78;
-  border-color: #af0a78;
+  background-color: #a356fafb;
+  border-color: #7700ff;
   box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.26);
 }
 
